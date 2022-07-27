@@ -1,16 +1,21 @@
+CC=gcc
+AR=ar
+FLAGS= -Wall -g
 
+all: net_client net_server nslookup
 
-all: client server lookup
+net_client: net_client.o nslookup.a
+		$(CC) $(FLAGS) -o net_client net_client.o nslookup.a
 
-client: net_client.c
-		gcc net_client.c -o net_client
+nslookup.a: nslookup.o
+	$(AR) -rcs nslookup.a nslookup.o
 
-server: net_server.c
-		gcc net_server.c -o net_server
+net_client.o: net_client.c nslookup.h
+	$(CC) $(FLAGS) -c net_client.c
 
-lookup: nslookup.c
-		gcc nslookup.c -o lookup
+nslookup.o: nslookup.c nslookup.h
+	$(CC) $(FLAGS) -c nslookup.c
 
 clean:
-		rm -f lookup net_client net_server
+		rm -f net_client net_server *.o *.a
 		
