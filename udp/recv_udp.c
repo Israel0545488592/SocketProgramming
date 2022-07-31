@@ -19,31 +19,36 @@ void printsin(struct sockaddr_in *s, char *str1, char *str2) {
 }
 */
 
-int main(int argc, char *argv[])
-{
-  int socket_fd, cc, fsize;
+int main(int argc, char *argv[]){
+
+  int reciver, sender;                                  // socket variables
+  socklen_t fsize;
   struct sockaddr_in  s_in, from;
   struct { char head; u_long  body; char tail;} msg;
 
-  socket_fd = socket (AF_INET, SOCK_DGRAM, 0);
+  reciver = socket (AF_INET, SOCK_DGRAM, 0);            // connectionless IPv4 socket for UDP comunication
 
-  bzero((char *) &s_in, sizeof(s_in));  /* They say you must do this    */
 
-  s_in.sin_family = (short)AF_INET;
-  s_in.sin_addr.s_addr = htonl(INADDR_ANY);    /* WILDCARD */
+  // preproccessing
+
+  bzero((char *) &s_in, sizeof(s_in));              // zero out address-struct to prevent mishaps
+  s_in.sin_family = (short) AF_INET;                // agin: IPv4
+  s_in.sin_addr.s_addr = htonl(INADDR_ANY);         // connect via ALL port
   s_in.sin_port = htons((u_short)0x3333);
 
   //printsin( &s_in, "RECV_UDP", "Local socket is:"); 
-  fflush(stdout);
+  fflush(stdout);                                           // feed stdout filestream the content intended to him so far
 
-  bind(socket_fd, (struct sockaddr *)&s_in, sizeof(s_in));
+  bind(reciver, (struct sockaddr *)&s_in, sizeof(s_in));    // listen to incoming messages
 
-  for(;;) {
+  while (1) {
+
     fsize = sizeof(from);
-    cc = recvfrom(socket_fd,&msg,sizeof(msg),0,(struct sockaddr *)&from,&fsize);
+    sender = recvfrom(reciver, &msg, sizeof(msg), 0, (struct sockaddr *) &from, &fsize);
     //printsin( &from, "recv_udp: ", "Packet from:");
-    printf("Got data ::%c%ld%c\n",msg.head,(long) ntohl(msg.body),msg.tail); 
+    printf("Got data ::%c%ld%c\n", msg.head, (long) ntohl(msg.body), msg.tail); 
     fflush(stdout);
+    close(sender);
   }
   
   return 0;
