@@ -95,4 +95,4 @@ int main(int argc, char* argv[]){
   close(client);
   fclose(file);
   exit(0);
-} 
+}

@@ -26,8 +26,16 @@ int main(int argc, char *argv[]){
   bcopy(hostptr -> h_addr, (char *) &dest.sin_addr, hostptr -> h_length);
   dest.sin_port = htons((u_short)0x3333);
 
+
+
+  /*
+    the reciver has to know the id of the proccess
+    running this program inorder to compose the UDP
+    segment cause part of it is: source port number.
+  */
+
   msgbuf.head = '<';
-  msgbuf.body = htonl(getpid());                                    /* IMPORTANT! */
+  msgbuf.body = htonl(getpid());
   msgbuf.tail = '>';
 
   sendto(sender, &msgbuf, sizeof(msgbuf), 0, (struct sockaddr *) &dest, sizeof(dest));

@@ -9,48 +9,52 @@
 #include <unistd.h>
 #include <stdio.h>
 
-/*
-void printsin(struct sockaddr_in *s, char *str1, char *str2) {
+/* method to print recived UDP segment's info */
+
+void printsin(struct sockaddr_in *sock, char *str1, char *str2) {
+
   printf("%s\n", str1);
-  printf("%s: ", str2);
-  -- port: sin->sin_port (host integer type) 
-  -- IP: sin->sin_addr (IP in dotted-decimal notation) 
+  char IP[16] = {0};
+  inet_ntop(AF_INET, &(sock -> sin_addr), IP, INET_ADDRSTRLEN);
+  printf("%s: ip = %s, port = %d \n", str2, IP, ntohs(sock -> sin_port));
   printf("\n");
 }
-*/
 
 int main(int argc, char *argv[]){
 
-  int reciver, sender;                                  // socket variables
-  socklen_t fsize;
-  struct sockaddr_in  s_in, from;
-  struct { char head; u_long  body; char tail;} msg;
+  int reciver, sender;                                      // socket variables
+  socklen_t snd_addr_size;
+  struct sockaddr_in  reciver_addr, sender_addr;
+  struct { char head; u_long  body; char tail;} msg;        // variable to hold coming UDP segment info
 
-  reciver = socket (AF_INET, SOCK_DGRAM, 0);            // connectionless IPv4 socket for UDP comunication
+  reciver = socket (AF_INET, SOCK_DGRAM, 0);                // connectionless IPv4 socket for UDP comunication
 
 
   // preproccessing
 
-  bzero((char *) &s_in, sizeof(s_in));              // zero out address-struct to prevent mishaps
-  s_in.sin_family = (short) AF_INET;                // agin: IPv4
-  s_in.sin_addr.s_addr = htonl(INADDR_ANY);         // connect via ALL port
-  s_in.sin_port = htons((u_short)0x3333);
+  bzero((char *) &reciver_addr, sizeof(reciver_addr));              // zero out address-struct to prevent mishaps
+  reciver_addr.sin_family = (short) AF_INET;                        // agin: IPv4
+  reciver_addr.sin_addr.s_addr = htonl(INADDR_ANY);                 // connect via ALL port
+  reciver_addr.sin_port = htons((u_short)0x3333);
 
-  //printsin( &s_in, "RECV_UDP", "Local socket is:"); 
-  fflush(stdout);                                           // feed stdout filestream the content intended to him so far
+  printsin( &reciver_addr, "RECV_UDP", "Local socket is:"); 
+  fflush(stdout);                                                   // feed stdout filestream the content intended to it so far
 
-  bind(reciver, (struct sockaddr *)&s_in, sizeof(s_in));    // listen to incoming messages
+  bind(reciver, (struct sockaddr *) &reciver_addr, sizeof(reciver_addr));          // listen to incoming messages
 
   while (1) {
 
-    fsize = sizeof(from);
-    sender = recvfrom(reciver, &msg, sizeof(msg), 0, (struct sockaddr *) &from, &fsize);
-    //printsin( &from, "recv_udp: ", "Packet from:");
-    printf("Got data ::%c%ld%c\n", msg.head, (long) ntohl(msg.body), msg.tail); 
+    snd_addr_size = sizeof(sender_addr);
+    sender = recvfrom(reciver, &msg, sizeof(msg), 0, (struct sockaddr *) &sender_addr, &snd_addr_size);
+
+    printsin( &sender_addr, "recv_udp: ", "Packet from:");
+    printf("Got data ::%c%ld%c\n", msg.head, (long) ntohl(msg.body), msg.tail);
     fflush(stdout);
+
     close(sender);
   }
-  
+
+  close(reciver);
   return 0;
 }
 

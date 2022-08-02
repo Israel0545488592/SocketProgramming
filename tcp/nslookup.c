@@ -8,12 +8,10 @@ char* lookup(char* hostname) {
   struct sockaddr_in* saddr;
 
   /* 
-    the main method wich I assume ask the OS to
-    run the nslookup < hostname > command wich result
-    in a DNS request to figure out the IP of the hostname
-    wich is supplied in the form of a URL
+    the main method which I assume ask the OS to
+    run the nslookup < hostname > command. that in return result
+    in a DNS request to figure out the IP of the hostname.
   */
-   
   if (0 != getaddrinfo(hostname, NULL, NULL, &res)) {
 
     fprintf(stderr, "Error in resolving hostname %s\n", hostname);
