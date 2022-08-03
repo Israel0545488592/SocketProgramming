@@ -27,8 +27,8 @@ int main(int argc, char *argv[]){
   struct sockaddr_in  reciver_addr, sender_addr;
   struct { char head; u_long  body; char tail;} msg;        // variable to hold coming UDP segment info
 
-  reciver = socket (AF_INET, SOCK_DGRAM, 0);                // connectionless IPv4 socket for UDP comunication
 
+  reciver = socket (AF_INET, SOCK_DGRAM, 0);                // connectionless IPv4 socket for UDP comunication
 
   // preproccessing
 
