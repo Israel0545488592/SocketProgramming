@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
 
   bzero((char *) &reciver_addr, sizeof(reciver_addr));              // zero out address-struct to prevent mishaps
   reciver_addr.sin_family = (short) AF_INET;                        // agin: IPv4
-  reciver_addr.sin_addr.s_addr = htonl(INADDR_ANY);                 // connect via ALL port
+  reciver_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   reciver_addr.sin_port = htons((u_short)0x3333);
 
   printsin( &reciver_addr, "RECV_UDP", "Local socket is:"); 
