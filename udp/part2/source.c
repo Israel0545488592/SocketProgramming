@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <inttypes.h>
@@ -7,18 +6,18 @@
 #include <sys/socket.h>
 #include <strings.h>
 #include <unistd.h>
-#include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "print_socket.h"
 
 int main(int argc, char *argv[]){
 
 
   // socket variables
-  int sender, itr, bytes_sent;
-  struct sockaddr_in  src_addr, dest_addr;
+  int sender, bytes_sent, itr;
+  struct sockaddr_in  dest_addr, src_addr;
   struct hostent *hostptr;
-  struct { char head; u_long body; char tail; } msgbuf;
+  struct { char head; u_long body; char tail; } msg;
 
 
   // connectionless IPv4 socket for UDP comunication
@@ -44,6 +43,9 @@ int main(int argc, char *argv[]){
   src_addr.sin_addr.s_addr = htonl(INADDR_ANY);                                  // source IP doesnt matter for conectionless comunication
   src_addr.sin_port = htons((u_short)0x3332);
 
+  printsin( &src_addr, "RECV_UDP", "Local socket is:"); 
+  fflush(stdout);
+
 
   if (bind(sender, (struct sockaddr *) &src_addr, sizeof(src_addr)) < 0) {
 
@@ -55,11 +57,11 @@ int main(int argc, char *argv[]){
   itr = 0;
   while (1){
 
-    msgbuf.head = '<';
-    msgbuf.body = htonl(itr);
-    msgbuf.tail = '>';
+    msg.head = '<';
+    msg.body = htonl(itr);
+    msg.tail = '>';
 
-    bytes_sent = sendto(sender, &msgbuf, sizeof(msgbuf), 0, (struct sockaddr *) &dest_addr, sizeof(dest_addr));
+    bytes_sent = sendto(sender, &msg, sizeof(msg), 0, (struct sockaddr *) &dest_addr, sizeof(dest_addr));
     if (bytes_sent < 0){
 
       perror("could not recive any info \n");
@@ -70,7 +72,7 @@ int main(int argc, char *argv[]){
     usleep(1000000);
     printf("datagram sent\n");
   }
-  
+
   close(sender);
   return 0;
 }

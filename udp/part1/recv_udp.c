@@ -25,13 +25,13 @@ int main(int argc, char *argv[]){
 
   // socket variables
   int reciver, bytes_recived;
-  socklen_t snd_addr_size;
-  struct sockaddr_in  reciver_addr, sender_addr;
+  socklen_t src_addr_len;
+  struct sockaddr_in  src_addr;
   struct { char head; u_long  body; char tail;} msg;        // variable to hold coming UDP segment info
 
 
   // connectionless IPv4 socket for UDP comunication
-  if ((reciver = socket (AF_INET, SOCK_DGRAM, 0)) < 0){
+  if ((reciver = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
 
     perror("NIC problome\n");
     return -1;
@@ -40,22 +40,22 @@ int main(int argc, char *argv[]){
 
   // preproccessing
 
-  bzero((char *) &reciver_addr, sizeof(reciver_addr));              // zero out address-struct to prevent mishaps
-  reciver_addr.sin_family = (short) AF_INET;                        // agin: IPv4
-  reciver_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  reciver_addr.sin_port = htons((u_short)0x3333);
+  bzero((char *) &src_addr, sizeof(src_addr));              // zero out address-struct to prevent mishaps
+  src_addr.sin_family = (short) AF_INET;                    // agin: IPv4
+  src_addr.sin_addr.s_addr = htonl(INADDR_ANY);             // spesific source IP doesnt matter for conectionless comunication
+  src_addr.sin_port = htons((u_short)0x3333);               // set up port
 
-  printsin( &reciver_addr, "RECV_UDP", "Local socket is:"); 
+  printsin( &src_addr, "RECV_UDP", "Local socket is:"); 
   fflush(stdout);
 
-  bind(reciver, (struct sockaddr *) &reciver_addr, sizeof(reciver_addr));          // listen to incoming messages
+  bind(reciver, (struct sockaddr *) &src_addr, sizeof(src_addr));          // listen to incoming messages
 
   while (1) {
 
     // reciving info
 
-    snd_addr_size = sizeof(sender_addr);
-    bytes_recived = recvfrom(reciver, &msg, sizeof(msg), 0, (struct sockaddr *) &sender_addr, &snd_addr_size);
+    src_addr_len = sizeof(src_addr);
+    bytes_recived = recvfrom(reciver, &msg, sizeof(msg), 0, (struct sockaddr *) &src_addr, &src_addr_len);
     if (bytes_recived < 0){
 
       perror("could not recive any info \n");
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]){
 
     // printing info about sender and packet
 
-    printsin( &sender_addr, "recv_udp: ", "Packet from:");
+    printsin( &src_addr, "recv_udp: ", "Packet from:");
     printf("Got data ::%c%ld%c\n", msg.head, (long) ntohl(msg.body), msg.tail);
     fflush(stdout);
   }

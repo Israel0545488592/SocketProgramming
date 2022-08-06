@@ -8,15 +8,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-void printsin(struct sockaddr_in *sock, char *str1, char *str2) {
-
-  printf("%s\n", str1);
-  char IP[16] = {0};
-  inet_ntop(AF_INET, &(sock -> sin_addr), IP, INET_ADDRSTRLEN);
-  printf("%s: ip = %s, port = %d \n", str2, IP, ntohs(sock -> sin_port));
-  printf("\n");
-}
+#include "print_socket.h"
 
 int main(int argc, char *argv[]){
 
@@ -26,7 +18,7 @@ int main(int argc, char *argv[]){
 
   // socket variables
   int gateway, bytes_recv, bytes_sent;
-  socklen_t dst_addr_size;
+  socklen_t src_addr_len;
   struct sockaddr_in  src_addr, dest_addr;
   struct hostent *hostptr;
   struct { char head; u_long  body; char tail;} msg_rcv, msg_snd;       // variable to hold UDP segment info
@@ -52,12 +44,6 @@ int main(int argc, char *argv[]){
   dest_addr.sin_family = (short) AF_INET;
   dest_addr.sin_port = htons((u_short)0x3334);
   bcopy(hostptr -> h_addr, (char *) &dest_addr.sin_addr, hostptr -> h_length);  // set IP
-  
-  if (bind(gateway, (struct sockaddr *) &src_addr, sizeof(src_addr)) < 0) {
-
-    perror("connection to network error\n");
-    exit(1);
-  }
 
   msg_snd.head = '<';
   msg_snd.tail = '>';
@@ -66,13 +52,19 @@ int main(int argc, char *argv[]){
   fflush(stdout);
 
 
+  if (bind(gateway, (struct sockaddr *) &src_addr, sizeof(src_addr)) < 0) {
+
+    perror("connection to network error\n");
+    exit(1);
+  }
+
 
   while (1) {
 
     // reciving data
 
-    dst_addr_size = sizeof(dest_addr);
-    bytes_recv = recvfrom(gateway, &msg_rcv, sizeof(msg_rcv), 0, (struct sockaddr *) &dest_addr, &dst_addr_size);
+    src_addr_len = sizeof(src_addr);
+    bytes_recv = recvfrom(gateway, &msg_rcv, sizeof(msg_rcv), 0, (struct sockaddr *) &src_addr, &src_addr_len);
     if (bytes_recv < 0){
 
       perror("could not recive any info \n");
@@ -82,10 +74,10 @@ int main(int argc, char *argv[]){
     // printing info about the source
 
     printf("Got data ::%c%ld%c\n", msg_rcv.head, (long) ntohl(msg_rcv.body), msg_rcv.tail);
-    printsin( &dest_addr, "recv_udp: ", "Packet from:");
+    printsin( &src_addr, "recv_udp: ", "Packet from:");
     fflush(stdout);
 
-    if ( ((float) random()) / ((float) RAND_MAX) ){   // packet loss simulation
+    if (( (float)random() / (float)RAND_MAX ) > 0.5){   // packet loss simulation
       
       // sending info forward
 

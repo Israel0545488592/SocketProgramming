@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
 
   bzero((char *) &src_addr, sizeof(src_addr));
   src_addr.sin_family = (short) AF_INET;
-  src_addr.sin_addr.s_addr = htonl(INADDR_ANY);                                 // source IP doesnt matter for conectionless comunication
+  src_addr.sin_addr.s_addr = htonl(INADDR_ANY);                                  // source IP doesnt matter for conectionless comunication
   src_addr.sin_port = htons((u_short)0x3334);
 
 
@@ -49,10 +49,11 @@ int main(int argc, char *argv[]){
     exit(1);
   }
 
-
   msg.head = '<'; 
   msg.body = htonl(getpid());  // proccess id
   msg.tail = '>';
+
+  
 
   // sending info
   bytes_sent = sendto(sender, &msg, sizeof(msg), 0, (struct sockaddr *) &dest_addr, sizeof(dest_addr));
