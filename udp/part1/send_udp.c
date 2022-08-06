@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
 
 
   // socket variables
-  int sender;
+  int sender, bytes_sent;
   struct sockaddr_in  dest_addr, src_addr;
   struct hostent *hostptr;
   struct { char head; u_long body; char tail; } msg;
@@ -39,22 +39,28 @@ int main(int argc, char *argv[]){
 
   bzero((char *) &src_addr, sizeof(src_addr));
   src_addr.sin_family = (short) AF_INET;
-  src_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  src_addr.sin_addr.s_addr = htonl(INADDR_ANY);                                 // source IP doesnt matter for conectionless comunication
   src_addr.sin_port = htons((u_short)0x3334);
 
 
   if (bind(sender, (struct sockaddr *) &src_addr, sizeof(src_addr)) < 0) {
 
-    perror("bind error\n");
+    perror("connection to network error\n");
     exit(1);
   }
 
 
-  msg.head = '<';
+  msg.head = '<'; 
   msg.body = htonl(getpid());  // proccess id
   msg.tail = '>';
 
-  sendto(sender, &msg, sizeof(msg), 0, (struct sockaddr *) &dest_addr, sizeof(dest_addr));
+  // sending info
+  bytes_sent = sendto(sender, &msg, sizeof(msg), 0, (struct sockaddr *) &dest_addr, sizeof(dest_addr));
+  if (bytes_sent < 0){
+
+      perror("could not recive any info \n");
+      return -1;
+  }
 
   close(sender);
   return 0;
