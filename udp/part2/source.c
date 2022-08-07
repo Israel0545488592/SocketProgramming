@@ -12,6 +12,8 @@
 
 int main(int argc, char *argv[]){
 
+  if (argc < 3){ printf("sould supply hostname and destination port"); }
+
 
   // socket variables
   int sender, bytes_sent, itr;
@@ -36,12 +38,12 @@ int main(int argc, char *argv[]){
   bzero((char *) &dest_addr, sizeof(dest_addr));                                 // zero out address-struct to prevent mishaps
   dest_addr.sin_family = (short) AF_INET;                                        // again: IPv4
   bcopy(hostptr -> h_addr, (char *) &dest_addr.sin_addr, hostptr -> h_length);   // the IP of the destination
-  dest_addr.sin_port = htons((u_short)0x3333);                                   // port
+  dest_addr.sin_port = htons(atoi(argv[2]));                                     // port
 
   bzero((char *) &src_addr, sizeof(src_addr));
   src_addr.sin_family = (short) AF_INET;
   src_addr.sin_addr.s_addr = htonl(INADDR_ANY);                                  // source IP doesnt matter for conectionless comunication
-  src_addr.sin_port = htons((u_short)0x3332);
+  src_addr.sin_port = htons(atoi(argv[2]) -1);
 
   printsin( &src_addr, "RECV_UDP", "Local socket is:"); 
   fflush(stdout);
@@ -75,4 +77,4 @@ int main(int argc, char *argv[]){
 
   close(sender);
   return 0;
-}
+ }

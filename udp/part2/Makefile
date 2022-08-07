@@ -13,6 +13,9 @@ gateway: gateway.o print_socket.a
 sink: sink.o print_socket.a
 	$(CC) $(FLAGS) -o sink sink.o print_socket.a
 
+source.o: source.c print_socket.h
+	$(CC) $(FLAGS) -c source.c
+
 gateway.o: gateway.c print_socket.h
 	$(CC) $(FLAGS) -c gateway.c
 

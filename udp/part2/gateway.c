@@ -12,7 +12,8 @@
 
 int main(int argc, char *argv[]){
 
-  // set up
+  if (argc < 3){ printf("sould supply hostname and source port"); }
+
 
   srandom(10);                                                          // seed for the random generator
 
@@ -38,11 +39,11 @@ int main(int argc, char *argv[]){
   bzero((char *) &src_addr, sizeof(src_addr));                      // zero out address-struct to prevent mishaps
   src_addr.sin_family = (short) AF_INET;                            // agin: IPv4
   src_addr.sin_addr.s_addr = htonl(INADDR_ANY);                     // spesfic id doesnt matter for the reciver in conectionless comunication
-  src_addr.sin_port = htons((u_short)0x3333);                       // set the port
+  src_addr.sin_port = htons(atoi(argv[2]));                         // set the port
 
   bzero((char *) &dest_addr, sizeof(dest_addr));
   dest_addr.sin_family = (short) AF_INET;
-  dest_addr.sin_port = htons((u_short)0x3334);
+  dest_addr.sin_port =  htons(atoi(argv[2]) +1);
   bcopy(hostptr -> h_addr, (char *) &dest_addr.sin_addr, hostptr -> h_length);  // set IP
 
   msg_snd.head = '<';

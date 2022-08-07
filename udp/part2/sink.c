@@ -13,6 +13,9 @@
 
 int main(int argc, char *argv[]){
 
+  if (argc < 2){ printf("sould supply source port"); }
+
+
   // socket variables
   int reciver, bytes_recived;
   socklen_t src_addr_len;
@@ -33,7 +36,7 @@ int main(int argc, char *argv[]){
   bzero((char *) &src_addr, sizeof(src_addr));              // zero out address-struct to prevent mishaps
   src_addr.sin_family = (short) AF_INET;                    // agin: IPv4
   src_addr.sin_addr.s_addr = htonl(INADDR_ANY);             // spesific source IP doesnt matter for conectionless comunication
-  src_addr.sin_port = htons((u_short)0x3334);               // set up port
+  src_addr.sin_port = htons(atoi(argv[1]));                 // set up port
 
   printsin( &src_addr, "RECV_UDP", "Local socket is:"); 
   fflush(stdout);
