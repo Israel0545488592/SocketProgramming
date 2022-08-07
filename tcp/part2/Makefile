@@ -2,8 +2,6 @@ CC=gcc
 AR=ar
 FLAGS= -Wall -g
 
-all: net_client nslookup
-
 net_client: net_client.o nslookup.a
 	$(CC) $(FLAGS) -o net_client net_client.o nslookup.a
 

@@ -41,7 +41,7 @@ int main(void){
   // open up another socket for new client
   connect_sock = accept(sock, (struct sockaddr *)&serv_name, &len);
 
-  //send it some lovely messages
+  //send it a lovely message
   for (count = 1; count <= SIM_LENGTH; count++){
     
     write(connect_sock, &count, 4);

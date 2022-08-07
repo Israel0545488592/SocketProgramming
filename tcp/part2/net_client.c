@@ -32,9 +32,9 @@ int main(int argc, char* argv[]){
   int bytes_read = 1;
 
   // http get message and a buffer for the response
-  char message[300] = "GET /";
-  strncat(message, argv[2], strlen(argv[2]));
-  strncat(message, " HTTP/1.1", strlen(argv[2]));
+  char message[300] = "";
+  sprintf(message, "GET /%s HTTP/1.1\r\nHost: %s\r\nContent-Type: text/plain\r\n\r\n", argv[2], argv[1]);
+  printf("\nthe http request: %s\n", message);
 
   // memory for recived messages
   char buffer[1000] = {0};
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
   printf("Client is alive and establishing socket connection.\n");
   
 
-  client = socket(AF_INET, SOCK_STREAM, 0);
+  client = socket(AF_INET, SOCK_STREAM, 0);           // conection oriented socket for TCP comunication
   if (client < 0){
 
     perror ("Error opening channel");
@@ -73,13 +73,13 @@ int main(int argc, char* argv[]){
     exit(1);
   }
 
-  if (send(client, message, sizeof(message) +1, 0) == -1){  // the http get message
+  if (send(client, message, sizeof(message) +1, 0) == -1){  // send the HTTP GET message
 
     printf("transmission went wrong");
     return -1;
   }
 
-  while (bytes_read > 0){
+  while (bytes_read > 0){   // read response
 
     bzero((char*) buffer, sizeof(buffer));
     bytes_read = recv(client, &buffer, sizeof(buffer), 0);
