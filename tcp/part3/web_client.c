@@ -33,6 +33,7 @@ int main(int argc, char* argv[]){
 
     printf("problomes with parsing URL, maybe wrong format\n");
   }
+  printf("\nData regurding the upcoming request:\n");
   printf("\nhostname: %s\nURI: %s\n", hostname, URI);
 
   IP_addr = lookup(hostname);
@@ -96,7 +97,8 @@ int main(int argc, char* argv[]){
     bytes_count += bytes_read;
   }
 
-  printf("%d bytes have been writen to an output text file\n", bytes_count);
+  printf("%d bytes have been writen to an output html file\nuse [ cat out.html ] to see its content\n", bytes_count);
+  printf("you can also just open it on your browser\n");
 
 
   printf("Exiting now.\n");
