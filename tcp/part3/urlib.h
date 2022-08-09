@@ -7,5 +7,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <string.h>
 
-char* lookup(char*);    // hostname -> IP
+int URLparser(char*, char*, char*);   // URL -> hostname and URI
+char* lookup(char*);                  // hostname -> IP

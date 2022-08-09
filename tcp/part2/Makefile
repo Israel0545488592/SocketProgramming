@@ -15,4 +15,4 @@ nslookup.o: nslookup.c nslookup.h
 	$(CC) $(FLAGS) -c nslookup.c
 
 clean:
-	rm -f net_client net_server *.o *.a
+	rm -f net_client *.o *.a
